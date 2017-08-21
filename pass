@@ -7,21 +7,23 @@ import multiprocessing
 
 import requests
 
+def pa(i):
+    url = 'http://qilt.co.za/d3/svg/'
+    r = requests.get(url+"150315"+str(i)+".svg")
+    if r.status_code != 404:
+        print("150315"+str(i)+".svg")
+        with open("150315"+str(i)+".svg", 'wb') as output_file:
+            output_file.write(r.text.encode('cp1251'))
 def ncount( n ) : # тестовая CPU-загружающая функция
-    url = 'http://qilt.co.za/d3/svg/150315'
-    for i in range(6100,6150):
-        r = requests.get(url+str(i)+".svg")
-        if r.status_code != 404:
-            print(str(i)+".svg")
-            with open(str(i)+".svg", 'wb') as output_file:
-                output_file.write(r.text.encode('cp1251'))
-
-
+    print( str(6000+200*n)+" - "+str(6000+200*(n+1))+"\n")
+    n=0
+    for i in range(6000+200*n,6000+200*(n+1)): pa(i)
+    print("nn = "+str(n)+"\n")
 
 if __name__ == '__main__':
-    repnum = 10000000
-    thrnum = 2
-    mode = 'stpm' # варианты запуска
+
+    thrnum = 5
+    mode = 't' # варианты запуска
 
     try :
         opts, args = getopt.getopt( sys.argv[1:], "t:n:m:" )
@@ -30,26 +32,15 @@ if __name__ == '__main__':
     
     for opt, arg in opts :
         if opt[ 1: ] == 't' : thrnum = int( arg )
-        if opt[ 1: ] == 'n' : repnum = int( arg )
-        if opt[ 1: ] == 'm' : mode = arg
 
     print( "число процессоров (ядер) = {0:d}".format( multiprocessing.cpu_count() ) )
     print( "исполнение в Python версия {0:s}".format( sys.version ) )
     print( "число ветвей выполнения {0:d}".format( thrnum ) )
-    print( "число циклов в ветви {0:d}".format( repnum ) )
-
-    if 's' in mode :
-        print( "============ последовательное выполнение ============" )
-        clc = time.time()
-        for i in range( thrnum ) : ncount( repnum )
-        clc = time.time() - clc
-        print( "время {0:.2f} секунд".format( clc ) )
-
     if 't' in mode :
         print( "================ параллельные потоки ================" )
         threads = []
         for n in range( thrnum ) :
-            tid = threading.Thread( target = ncount, args=( repnum, ) )
+            tid = threading.Thread( target = ncount, args=( n, ) ) #!!!
             threads.append( tid )
             tid.setDaemon( 1 )
         clc = time.time()
@@ -57,7 +48,6 @@ if __name__ == '__main__':
         for n in range( thrnum ) : threads[ n ].join()
         clc = time.time() - clc
         print( "время {0:.2f} секунд".format( clc ) )
-
     if 'p' in mode :
         print( "=============== параллельные процессы ===============" )
         threads = []; fork = True
