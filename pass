@@ -9,7 +9,8 @@ import multiprocessing
 
 import requests
 
-x = "1503326"
+x = "150332" 
+    #1503326
 
 def pa(i):
     url = 'http://qilt.co.za/d3/svg/'
@@ -19,13 +20,13 @@ def pa(i):
         with open(x+str(i)+".svg", 'wb') as output_file:
             output_file.write(r.text.encode('cp1251'))
 def ncount( n ) : # тестовая CPU-загружающая функция
-    print( x+str(200*n)+" - "+x+str(200*(n+1)-1)+"\n")
-    for i in range(200*n,200*(n+1)-1): pa(i)
+    print( x+str(1000*n)+" - "+x+str(1000*(n+1)-1)+"\n")
+    for i in range(1000*n,1000*(n+1)-1): pa(i)
     print("nn = "+str(n)+"\n")
 
 if __name__ == '__main__':
 
-    thrnum = 5
+    thrnum = 10
     mode = 't' # варианты запуска
 
     try :
@@ -50,4 +51,4 @@ if __name__ == '__main__':
         for n in range( thrnum ) : threads[ n ].start()
         for n in range( thrnum ) : threads[ n ].join()
         clc = time.time() - clc
-        print( "время {0:.2f} секунд".format( clc ) )
+print( "время {0:.2f} секунд".format( clc ) )
